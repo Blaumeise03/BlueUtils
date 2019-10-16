@@ -17,8 +17,6 @@
 
 package de.blaumeise03.spigotUtils;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import de.blaumeise03.spigotUtils.exceptions.ConfigurationNotFoundException;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -48,7 +46,7 @@ public class Configuration extends YamlConfiguration {
      * @param name   the name of the config (e.g. 'config.yml')
      * @param plugin the <code>JavaPlugin</code>.
      */
-    public Configuration(@Nullable String name, @NotNull JavaPlugin plugin) {
+    public Configuration(String name, JavaPlugin plugin) {
         this.plugin = plugin;
         if (name == null) name = "config.yml";
         this.name = name;
@@ -64,18 +62,18 @@ public class Configuration extends YamlConfiguration {
      *                                        new file.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void setup(boolean createFile) throws ConfigurationNotFoundException {
+    public void setup(boolean createFile) throws ConfigurationNotFoundException {
         if (!file.exists() && createFile) {
             file.getParentFile().mkdirs();
-            try {
+            /*try {
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new ConfigurationNotFoundException("Can't create file!", file);
-            }
+            }*/
             plugin.saveResource(name, false);
-            plugin.saveResource(file.getName(), false);
-        } else throw new ConfigurationNotFoundException(file);
+            //plugin.saveResource(file.getName(), false);
+        } else if (!file.exists()) throw new ConfigurationNotFoundException(file);
         //fileConfiguration = new YamlConfiguration();
         try {
             //fileConfiguration.load(file);

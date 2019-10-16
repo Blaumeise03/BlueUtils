@@ -21,7 +21,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,7 +35,7 @@ public class AdvancedPlugin extends JavaPlugin {
      *
      * @return the plugin.
      */
-    public static Plugin getPlugin() {
+    public static AdvancedPlugin getPlugin() {
         return plugin;
     }
 
@@ -45,6 +44,12 @@ public class AdvancedPlugin extends JavaPlugin {
         super.onEnable();
         plugin = this;
         pluginManager = Bukkit.getPluginManager();
+        de.blaumeise03.spigotUtils.Command.setup(this);
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
     }
 
     /**
@@ -52,7 +57,7 @@ public class AdvancedPlugin extends JavaPlugin {
      *
      * @param listener the event-class.
      */
-    private void registerEvent(Listener listener) {
+    protected void registerEvent(Listener listener) {
         pluginManager.registerEvents(listener, this);
     }
 

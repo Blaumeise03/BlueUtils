@@ -19,7 +19,6 @@ package de.blaumeise03.spigotUtils;
 
 import de.blaumeise03.spigotUtils.exceptions.CommandNotFoundException;
 import de.blaumeise03.spigotUtils.exceptions.PluginNotDefinedException;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -37,7 +36,7 @@ import java.util.List;
  * @version 1.0
  * @since 1.8
  */
-abstract public class Command implements CommandExecutor {
+abstract public class Command {
     private static List<Command> commands = new ArrayList<>();
     private static JavaPlugin plugin;
 
