@@ -1,18 +1,5 @@
 /*
- *     Copyright (C) 2019  Blaumeise03 - bluegame61@gmail.com
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Affero General Public License as published
- *     by the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Affero General Public License for more details.
- *
- *     You should have received a copy of the GNU Affero General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * Copyright (c) 2019 Blaumeise03
  */
 
 package de.blaumeise03.spigotUtils;
@@ -27,24 +14,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 
 public class AdvancedPlugin extends JavaPlugin {
-    private static AdvancedPlugin plugin;
+    //private AdvancedPlugin plugin;
     private PluginManager pluginManager;
-
-    /**
-     * Getter for the plugin field.
-     *
-     * @return the plugin.
-     */
-    public static AdvancedPlugin getPlugin() {
-        return plugin;
-    }
+    private CommandHandler handler;
 
     @Override
     public void onEnable() {
         super.onEnable();
-        plugin = this;
         pluginManager = Bukkit.getPluginManager();
-        de.blaumeise03.spigotUtils.Command.setup(this);
+        //de.blaumeise03.spigotUtils.Command.setup(this);
+        handler = new CommandHandler(this);
     }
 
     @Override
@@ -72,8 +51,7 @@ public class AdvancedPlugin extends JavaPlugin {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        de.blaumeise03.spigotUtils.Command.executeCommand(args, sender, label);
-        return true;
+        return handler.executeCommand(args, sender, label);
     }
 
     public void warn(String message) {
@@ -82,5 +60,9 @@ public class AdvancedPlugin extends JavaPlugin {
 
     public void info(String message) {
         getLogger().log(Level.INFO, message);
+    }
+
+    public CommandHandler getHandler() {
+        return handler;
     }
 }
