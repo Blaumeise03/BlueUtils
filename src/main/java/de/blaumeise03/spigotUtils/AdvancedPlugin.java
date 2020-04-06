@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Blaumeise03
+ * Copyright (c) 2020 Blaumeise03
  */
 
 package de.blaumeise03.spigotUtils;
@@ -10,9 +10,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
 
+/**
+ * An advanced version of the {@code JavaPlugin}
+ *
+ * @author Blaumeise03
+ * @version 2.0
+ * @implSpec Your main-plugin class wich normally {@code extends JavaPlugin} should just {@code extends AdvancedPlugin}
+ * @since 1.8
+ */
 public class AdvancedPlugin extends JavaPlugin {
     //private AdvancedPlugin plugin;
     private PluginManager pluginManager;
@@ -50,8 +59,8 @@ public class AdvancedPlugin extends JavaPlugin {
      * @return always true.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        return handler.executeCommand(args, sender, label);
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        return handler.executeCommand(command, args, sender, label);
     }
 
     public void warn(String message) {

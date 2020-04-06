@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Blaumeise03
+ * Copyright (c) 2020 Blaumeise03
  */
 
 package de.blaumeise03.spigotUtils;
@@ -14,6 +14,10 @@ import java.io.IOException;
 
 /**
  * For easy and fast configurations.
+ *
+ * @author Blaumeise03
+ * @version 1.3
+ * @since 1.8
  */
 public class Configuration extends YamlConfiguration {
     //private FileConfiguration fileConfiguration;

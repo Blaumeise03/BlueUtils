@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Blaumeise03
+ * Copyright (c) 2020 Blaumeise03
  */
 
 package de.blaumeise03.spigotUtils;
@@ -14,6 +14,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A Handler for the {@link Command Commands}
+ *
+ * @author Blaumeise03
+ * @version 2.0
+ * @implSpec Do not instantiate your own, simply use the one from {@link AdvancedPlugin#getHandler()}
+ * @since 1.8
+ */
 public class CommandHandler implements CommandExecutor {
     private List<Command> commands = new ArrayList<>();
     private JavaPlugin plugin;
@@ -30,10 +38,10 @@ public class CommandHandler implements CommandExecutor {
      * @param label  The command wich should be executed.
      * @return Returns a boolean if the command was found (NOT if the command was executed successfully).
      */
-    public boolean executeCommand(String[] args, CommandSender sender, String label) {
-        for (Command command : commands) {
-            if (command.isCommand(label)) {
-                command.run(sender, label, args);
+    public boolean executeCommand(org.bukkit.command.Command command, String[] args, CommandSender sender, String label) {
+        for (Command c : commands) {
+            if (c.isCommand(command)) {
+                c.run(command, sender, label, args);
                 return true;
             }
         }
@@ -61,7 +69,7 @@ public class CommandHandler implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, org.bukkit.command.@NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        executeCommand(strings, commandSender, s);
+        executeCommand(command, strings, commandSender, s);
         return false;
     }
 }

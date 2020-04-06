@@ -1,12 +1,14 @@
 /*
- * Copyright (c) 2019 Blaumeise03
+ * Copyright (c) 2020 Blaumeise03
  */
 
 package de.blaumeise03.spigotUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +18,16 @@ import java.util.List;
  * This Class simplifies the Spigot-Commands
  *
  * @author Blaumeise03
- * @version 1.0
+ * @version 2.0
  * @since 1.8
  */
 abstract public class Command {
     private String label;
     private List<String> alias = new ArrayList<>();
-    private Permission permission;
+    private Permission permission = null;
     private String help;
     private boolean onlyPlayer = false;
+    private boolean thirdExecutable = false;
     private CommandHandler handler;
 
     /**
@@ -92,7 +95,9 @@ abstract public class Command {
      * @param help       The help-text for the command
      * @param permission The Bukkit-permission for the command.
      * @param onlyPlayer If true only players may execute the command.
+     * @deprecated Permission is not needed if defined in plugin.yml
      */
+    @Deprecated
     public Command(CommandHandler handler, String label, String help, Permission permission, boolean onlyPlayer) {
         this.label = label;
         this.help = help;
@@ -104,32 +109,77 @@ abstract public class Command {
     }
 
     /**
+     * Constructor for creating a new command.
+     *
+     * @param label      The prefix of the command, e.g. /prefix arg0 arg1 arg2...
+     * @param help       The help-text for the command
+     * @param onlyPlayer If true only players may execute the command.
+     */
+    public Command(CommandHandler handler, String label, String help, boolean onlyPlayer) {
+        this.label = label;
+        this.help = help;
+        this.onlyPlayer = onlyPlayer;
+        this.handler = handler;
+        handler.addCommand(this);
+        //handler.registerCommand(label);
+    }
+
+    /**
+     * Constructor for creating a new command.
+     *
+     * @param label           The prefix of the command, e.g. /prefix arg0 arg1 arg2...
+     * @param help            The help-text for the command
+     * @param onlyPlayer      If true only players may execute the command.
+     * @param thirdExecutable If true players with permission are able to execute this command for another player: /label [targetPlayer] [otherArguments...]
+     */
+    public Command(CommandHandler handler, String label, String help, boolean onlyPlayer, boolean thirdExecutable) {
+        this.label = label;
+        this.help = help;
+        this.onlyPlayer = onlyPlayer;
+        this.handler = handler;
+        this.thirdExecutable = thirdExecutable;
+        handler.addCommand(this);
+        //handler.registerCommand(label);
+    }
+
+    /**
      * This method will be executed if a player execute the command.
      *
-     * @param args   The arguments from the command (if the player has entered some).
-     * @param sender The CommandSender of the command. If 'onlyPlayer' form the constructor is true this will be a player.
+     * @param args             The arguments from the command (if the player has entered some).
+     * @param sender           The CommandSender of the command. If 'onlyPlayer' form the constructor is true this will be a player.
+     * @param isPlayer         If the sender is a Player.
+     * @param isThirdExecution If the command is executed for another player by the {@code realSender}
+     * @param realSender       The real sender of the command if it is executed by another player via third-execution
      */
-    public abstract void onCommand(String[] args, CommandSender sender);
+    public abstract void onCommand(String[] args, CommandSender sender, boolean isPlayer, boolean isThirdExecution, CommandSender realSender);
+
+    /**
+     * Defines what should happen if the player has no permissions.
+     *
+     * @param sender  The CommandSender who tried to execute the command.
+     * @param command The command executed
+     */
+    protected void onNoPermission(CommandSender sender, org.bukkit.command.@NotNull Command command) {
+        onNoPermission(sender);
+    }
 
     /**
      * Defines what should happen if the player has no permissions.
      *
      * @param sender The CommandSender who tried to execute the command.
      */
-    public void onNoPermission(CommandSender sender) {
+    protected void onNoPermission(CommandSender sender) {
         sender.sendMessage("§4Dazu hast du keine Rechte!");
     }
 
     /**
      * Checks if the command wich was executed by the player equals. WARING: Aliases doesn't work!
      *
-     * @param label The label of the command the player entered.
+     * @param c The command wich was executed
      * @return Returns true if the label equals the command.
      */
-    public boolean isCommand(final String label) {
-        final boolean[] al = {false};
-        alias.forEach(s -> al[0] = (s.equalsIgnoreCase(label) || al[0]));
-        return (label.equalsIgnoreCase(this.label) || al[0]);
+    public boolean isCommand(final org.bukkit.command.Command c) {
+        return this.getLabel().equalsIgnoreCase(c.getName());
     }
 
     /**
@@ -138,25 +188,42 @@ abstract public class Command {
      * @param player The player who tries to execute the command.
      * @return Returns true if the player has the permission.
      */
-    private boolean hasPermission(Player player) {
-        return player.hasPermission(permission);
+    protected boolean hasPermission(Player player) {
+        return permission != null && player.hasPermission(permission);
     }
 
     /**
      * Method for checking if the command equals the command from the player. It also checks if the executor must be a player.
      *
-     * @param sender Equals the CommandSender of the onCommand method.
-     * @param label  Equals the label of the onCommand method.
-     * @param args   Equals the args of the onCommand method.
+     * @param command The {@code org.bukkit.command.Command}-Command
+     * @param sender  Equals the CommandSender of the onCommand method.
+     * @param label   Equals the label of the onCommand method.
+     * @param args    Equals the args of the onCommand method.
      */
-    public void run(CommandSender sender, String label, String[] args) {
-        if (isCommand(label)) {
+    public void run(@NotNull org.bukkit.command.Command command, CommandSender sender, String label, String[] args) {
+        if (isCommand(command)) {
+            CommandSender realSender = null;
+            boolean third = false;
+            if (thirdExecutable && args.length >= 1) {
+                String a = args[0];
+                Player p = Bukkit.getPlayer(a);
+                if (p != null) {
+                    realSender = sender;
+                    sender = p;
+                    third = true;
+                    for (int i = 1, argsLength = args.length; i < argsLength; i++) {
+                        args[i - 1] = args[i];
+                    }
+                }
+            }
             if (sender instanceof Player) {
-                if (hasPermission((Player) sender)) {
-                    onCommand(args, sender);
-                } else onNoPermission(sender);
+                if (hasPermission((Player) sender) || command.getPermission() != null && sender.hasPermission(command.getPermission())) {
+                    onCommand(args, sender, true, third, realSender);
+                } else {
+                    onNoPermission(sender, command);
+                }
             } else if (!onlyPlayer) {
-                onCommand(args, sender);
+                onCommand(args, sender, false, third, realSender);
             } else sender.sendMessage("You must be a Player to execute this Command!");
         }
     }
