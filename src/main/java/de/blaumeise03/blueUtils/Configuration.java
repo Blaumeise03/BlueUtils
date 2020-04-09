@@ -2,9 +2,9 @@
  * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.spigotUtils;
+package de.blaumeise03.blueUtils;
 
-import de.blaumeise03.spigotUtils.exceptions.ConfigurationNotFoundException;
+import de.blaumeise03.blueUtils.exceptions.ConfigurationNotFoundException;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

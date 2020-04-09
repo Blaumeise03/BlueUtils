@@ -2,7 +2,7 @@
  * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.spigotUtils;
+package de.blaumeise03.blueUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -38,6 +38,16 @@ public class AdvancedPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         super.onDisable();
+    }
+
+    /**
+     * This method can be executed with the command /blueUtils reload [PluginName].
+     * You can define what should happen, e.g. reloading configs or settings
+     *
+     * @return true if successful
+     */
+    public boolean onReload() {
+        return false;
     }
 
     /**

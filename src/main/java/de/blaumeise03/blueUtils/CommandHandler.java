@@ -2,9 +2,9 @@
  * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.spigotUtils;
+package de.blaumeise03.blueUtils;
 
-import de.blaumeise03.spigotUtils.exceptions.CommandNotFoundException;
+import de.blaumeise03.blueUtils.exceptions.CommandNotFoundException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class CommandHandler implements CommandExecutor {
     private List<Command> commands = new ArrayList<>();
-    private JavaPlugin plugin;
+    JavaPlugin plugin;
 
     public CommandHandler(JavaPlugin plugin) {
         this.plugin = plugin;

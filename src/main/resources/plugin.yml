@@ -1,4 +1,4 @@
-name: Spigot-Utils
+name: SpigotUtils
 version: 2.0-SNAPSHOT
 main: de.blaumeise03.spigotUtils.Plugin
 api-version: 1.13
@@ -6,3 +6,13 @@ description: A library for Spigot plugins
 load: STARTUP
 author: Blaumeise03
 website: blaumeise03.de
+
+permissions:
+  spigotUtils.thirdExecution:
+    default: op
+    description: Permission to execute a command for an other player
+  spigotUtils.*:
+    default: op
+    description: Wildcard
+    children:
+      spigotUtils.thirdExecution: true

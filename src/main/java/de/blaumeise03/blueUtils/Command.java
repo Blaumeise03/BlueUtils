@@ -2,9 +2,10 @@
  * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.spigotUtils;
+package de.blaumeise03.blueUtils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -208,23 +209,47 @@ abstract public class Command {
                 String a = args[0];
                 Player p = Bukkit.getPlayer(a);
                 if (p != null) {
+                    if (sender instanceof Player) {
+                        if (!sender.hasPermission("spigotUtils.thirdExecution")) {
+                            sender.sendMessage("§cDu darfst Befehle nicht für andere Spieler ausführen!");
+                            return;
+                        }
+                    }
                     realSender = sender;
                     sender = p;
                     third = true;
-                    for (int i = 1, argsLength = args.length; i < argsLength; i++) {
-                        args[i - 1] = args[i];
+                    String[] oldArgs = args;
+                    args = new String[oldArgs.length - 1];
+                    for (int i = 1, argsLength = oldArgs.length; i < argsLength; i++) {
+                        args[i - 1] = oldArgs[i];
                     }
                 }
             }
-            if (sender instanceof Player) {
+            if (!third && sender instanceof Player) {
                 if (hasPermission((Player) sender) || command.getPermission() != null && sender.hasPermission(command.getPermission())) {
+                    handler.plugin.getLogger().info("The player " + sender.getName() + " executed command " + command.getName() + ". "
+                            + (third ? "The command was originally executed by " + realSender.getName() : ""));
+                    if (third)
+                        realSender.sendMessage(ChatColor.GREEN + "Befehl wurde bei " + sender.getName() + " ausgeführt!");
                     onCommand(args, sender, true, third, realSender);
                 } else {
                     onNoPermission(sender, command);
                 }
-            } else if (!onlyPlayer) {
-                onCommand(args, sender, false, third, realSender);
-            } else sender.sendMessage("You must be a Player to execute this Command!");
+            } else {
+                if (realSender instanceof Player) {
+                    if (hasPermission((Player) realSender) || command.getPermission() != null && realSender.hasPermission(command.getPermission())) {
+                        handler.plugin.getLogger().info("The player " + sender.getName() + " executed command " + command.getName() + ". "
+                                + (third ? "The command was originally executed by " + realSender.getName() : ""));
+                        if (third)
+                            realSender.sendMessage(ChatColor.GREEN + "Befehl wurde bei " + sender.getName() + " ausgeführt!");
+                        onCommand(args, sender, true, third, realSender);
+                    }
+                } else if (!onlyPlayer) {
+                    onCommand(args, sender, false, third, realSender);
+                    handler.plugin.getLogger().info(sender.getName() + " executed command " + command.getName() + ". "
+                            + (third ? "The command was originally executed by " + realSender.getName() : ""));
+                } else sender.sendMessage("You must be a Player to execute this Command!");
+            }
         }
     }
 

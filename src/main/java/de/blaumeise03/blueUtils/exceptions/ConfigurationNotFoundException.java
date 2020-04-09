@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2019 Blaumeise03
+ * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.spigotUtils.exceptions;
+package de.blaumeise03.blueUtils.exceptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;

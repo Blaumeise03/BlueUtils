@@ -2,7 +2,7 @@
  * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.spigotUtils;
+package de.blaumeise03.blueUtils;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
