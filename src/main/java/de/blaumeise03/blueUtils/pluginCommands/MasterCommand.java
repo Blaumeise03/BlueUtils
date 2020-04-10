@@ -2,7 +2,7 @@
  * Copyright (c) 2020 Blaumeise03
  */
 
-package de.blaumeise03.blueUtils.commands;
+package de.blaumeise03.blueUtils.pluginCommands;
 
 import de.blaumeise03.blueUtils.AdvancedPlugin;
 import de.blaumeise03.blueUtils.Command;
@@ -26,13 +26,18 @@ public class MasterCommand {
             public void onCommand(String[] args, CommandSender sender, boolean isPlayer, boolean isThirdExecution, CommandSender realSender) {
                 if (args.length > 0) {
                     if (args[0].equalsIgnoreCase("reload")) {
-                        PluginList<AdvancedPlugin> plugins = Plugin.getPlugins();
+                        PluginList<AdvancedPlugin> plugins = AdvancedPlugin.getPlugins();
                         if (args.length > 1) {
                             AdvancedPlugin plugin = plugins.getPlugin(args[1]);
                             if (plugin != null) {
+                                Plugin.getPlugin().getLogger().warning(
+                                        "Reloading [" + plugin.getName() + "]... THIS IS NOT A NORMAL RELOAD and should not cause any issues," +
+                                                " the plugin itself defines what should happen on this reload." +
+                                                " Normally it would reload configurations and ther settings.");
                                 boolean s = plugin.onReload();
                                 sender.sendMessage((isPlayer ? (s ? "§a" : "c") : "") + "Plugin " + plugin.getName() + " wurde " + (s ? "" : "nicht ") + "neugeladen!" +
                                         (s ? "" : " Dies kann daran liegen, dass das Plugin dies nicht unterstützt oder das etwas schiefgelaufen ist."));
+                                Plugin.getPlugin().getLogger().info("Reload from [" + plugin.getName() + "] complete!");
                             }
                         }
                         StringBuilder msg = new StringBuilder((isPlayer ? "§c" : "") + "You must enter a valid plugin name! All available Plugins:");
@@ -44,6 +49,7 @@ public class MasterCommand {
                         return;
                     }
                 }
+                sender.sendMessage((isPlayer ? "§c" : "") + "Usage: /blueUtils reload <PluginName>");
             }
         };
     }

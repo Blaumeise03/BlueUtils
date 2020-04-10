@@ -1,18 +1,27 @@
-name: SpigotUtils
+name: BlueUtils
 version: 3.1-SNAPSHOT
-main: de.blaumeise03.spigotUtils.Plugin
+main: de.blaumeise03.blueUtils.Plugin
 api-version: 1.13
 description: A library for Spigot plugins
 load: STARTUP
 author: Blaumeise03
 website: blaumeise03.de
 
+commands:
+  blueUtils:
+    permission: blueUtils.reloadPlugin
+    description: Reloads a Plugin
+
 permissions:
-  spigotUtils.thirdExecution:
+  blueUtils.thirdExecution:
     default: op
     description: Permission to execute a command for an other player
-  spigotUtils.*:
+  blueUtils.reloadPlugin:
+    default: op
+    description: Permission for reloading plugins
+  blueUtils.*:
     default: op
     description: Wildcard
     children:
-      spigotUtils.thirdExecution: true
+      blueUtils.thirdExecution: true
+      blueUtils.reloadPlugin: true

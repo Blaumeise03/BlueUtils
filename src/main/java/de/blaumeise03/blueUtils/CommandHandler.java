@@ -55,6 +55,7 @@ public class CommandHandler implements CommandExecutor {
      * @throws CommandNotFoundException is thrown when the command was not found, e.g. when the command is not specified in the plugin.yml
      * @deprecated unused.
      */
+    @Deprecated
     public void registerCommand(String command) throws CommandNotFoundException {
         PluginCommand c = plugin.getCommand(command);
         if (c == null) {

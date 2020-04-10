@@ -4,7 +4,7 @@
 
 package de.blaumeise03.blueUtils;
 
-import de.blaumeise03.blueUtils.commands.MasterCommand;
+import de.blaumeise03.blueUtils.pluginCommands.MasterCommand;
 
 /**
  * Plugin main-class of this library to get loaded by the server. Should not be used for anything or this library can get broken.
@@ -15,15 +15,10 @@ import de.blaumeise03.blueUtils.commands.MasterCommand;
  * @since 1.8
  */
 public class Plugin extends AdvancedPlugin {
-    static PluginList<AdvancedPlugin> plugins = new PluginList<>();
     private static AdvancedPlugin plugin = null;
 
     public static AdvancedPlugin getPlugin() {
         return plugin;
-    }
-
-    public static PluginList<AdvancedPlugin> getPlugins() {
-        return plugins.clone();
     }
 
     @Override
@@ -34,7 +29,6 @@ public class Plugin extends AdvancedPlugin {
     @Override
     public void onLoad() {
         super.onLoad();
-        plugins.add(this);
     }
 
     @Override

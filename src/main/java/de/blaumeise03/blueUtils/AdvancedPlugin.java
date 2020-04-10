@@ -23,9 +23,13 @@ import java.util.logging.Level;
  * @since 1.8
  */
 public class AdvancedPlugin extends JavaPlugin {
-    //private AdvancedPlugin plugin;
+    static PluginList<AdvancedPlugin> plugins = new PluginList<>();
     private PluginManager pluginManager;
     private CommandHandler handler;
+
+    public static PluginList<AdvancedPlugin> getPlugins() {
+        return plugins.clone();
+    }
 
     @Override
     public void onEnable() {
@@ -83,5 +87,11 @@ public class AdvancedPlugin extends JavaPlugin {
 
     public CommandHandler getHandler() {
         return handler;
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        plugins.add(this);
     }
 }
