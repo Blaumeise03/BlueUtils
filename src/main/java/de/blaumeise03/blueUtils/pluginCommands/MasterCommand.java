@@ -5,52 +5,97 @@
 package de.blaumeise03.blueUtils.pluginCommands;
 
 import de.blaumeise03.blueUtils.AdvancedPlugin;
-import de.blaumeise03.blueUtils.Command;
 import de.blaumeise03.blueUtils.Plugin;
-import de.blaumeise03.blueUtils.PluginList;
+import de.blaumeise03.blueUtils.command.Command;
+import de.blaumeise03.blueUtils.exceptions.CommandNotFoundException;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MasterCommand {
+    private MasterCommand() {
+    }
+
     public static void init() {
-        new Command(Plugin.getPlugin().getHandler(), "blueUtils", "BlueUtils Tools", false, false) {
+        Command command = new Command("blueUtils", false, false) {
+
             /**
-             * This method will be executed if a player execute the command.
+             * This method is called when a player executes this command
              *
-             * @param args             The arguments from the command (if the player has entered some).
-             * @param sender           The CommandSender of the command. If 'onlyPlayer' form the constructor is true this will be a player.
-             * @param isPlayer         If the sender is a Player.
-             * @param isThirdExecution If the command is executed for another player by the {@code realSender}
-             * @param realSender       The real sender of the command if it is executed by another player via third-execution
+             * @param sender         the {@link CommandSender} who executes the command
+             * @param args           the arguments passed to the command
+             * @param isPlayer       if the <code>sender</code> is a {@link Player Player}
+             * @param isThird        if the command was executed by the <code>originalSender</code> for another player
+             *                       e.g: /command player args.. --> the command, if thirdExecutable is true,
+             *                       gets executed at the 'player' passed as first argument
+             * @param originalSender The original sender, equals <code>sender</code> if command was not third-executed
              */
             @Override
-            public void onCommand(String[] args, CommandSender sender, boolean isPlayer, boolean isThirdExecution, CommandSender realSender) {
-                if (args.length > 0) {
-                    if (args[0].equalsIgnoreCase("reload")) {
-                        PluginList<AdvancedPlugin> plugins = AdvancedPlugin.getPlugins();
-                        if (args.length > 1) {
-                            AdvancedPlugin plugin = plugins.getPlugin(args[1]);
-                            if (plugin != null) {
-                                Plugin.getPlugin().getLogger().warning(
-                                        "Reloading [" + plugin.getName() + "]... THIS IS NOT A NORMAL RELOAD and should not cause any issues," +
-                                                " the plugin itself defines what should happen on this reload." +
-                                                " Normally it would reload configurations and ther settings.");
-                                boolean s = plugin.onReload();
-                                sender.sendMessage((isPlayer ? (s ? "§a" : "c") : "") + "Plugin " + plugin.getName() + " wurde " + (s ? "" : "nicht ") + "neugeladen!" +
-                                        (s ? "" : " Dies kann daran liegen, dass das Plugin dies nicht unterstützt oder das etwas schiefgelaufen ist."));
-                                Plugin.getPlugin().getLogger().info("Reload from [" + plugin.getName() + "] complete!");
-                            }
-                        }
-                        StringBuilder msg = new StringBuilder((isPlayer ? "§c" : "") + "You must enter a valid plugin name! All available Plugins:");
-                        msg.append((isPlayer ? "§a" : ""));
-                        for (AdvancedPlugin plugin : plugins) {
-                            msg.append("\n - ").append(plugin.getName());
-                        }
-                        sender.sendMessage(msg.toString());
-                        return;
-                    }
-                }
-                sender.sendMessage((isPlayer ? "§c" : "") + "Usage: /blueUtils reload <PluginName>");
+            public void execute(CommandSender sender, String[] args, boolean isPlayer, boolean isThird, CommandSender originalSender) {
+                sender.sendMessage("§cUse /blueUtils reload <Plugin>");
             }
         };
+        Command reloadCmd = new Command("reload", false, false, new Permission("blueUtils.command.reloadPlugin")) {
+
+            /**
+             * This method is called when a player executes this command
+             *
+             * @param sender         the {@link CommandSender} who executes the command
+             * @param args           the arguments passed to the command
+             * @param isPlayer       if the <code>sender</code> is a {@link Player Player}
+             * @param isThird        if the command was executed by the <code>originalSender</code> for another player
+             *                       e.g: /command player args.. --> the command, if thirdExecutable is true,
+             *                       gets executed at the 'player' passed as first argument
+             * @param originalSender The original sender, equals <code>sender</code> if command was not third-executed
+             */
+            @Override
+            public void execute(CommandSender sender, String[] args, boolean isPlayer, boolean isThird, CommandSender originalSender) {
+                if (args.length > 1) {
+                    for (AdvancedPlugin plugin : AdvancedPlugin.getPlugins()) {
+                        if (plugin.getName().equalsIgnoreCase(args[0])) {
+                            plugin.onReload();
+                            sender.sendMessage("§aPlugin reloaded!");
+                            return;
+                        }
+                    }
+                } else {
+                    sender.sendMessage("§cPlease add a Plugin: /blueUtils reload <Plugin>");
+                }
+            }
+
+            /**
+             * Method for additional tab-arguments.
+             *
+             * @param args the arguments passed to the command (may contain sub-commands)
+             * @return a list with additional arguments for the command
+             * @implNote Overwrite this method and let it return all arguments which should be suggested e.g. player names
+             */
+            @Nullable
+            @Override
+            public List<String> getAdditionalTabArguments(@Nullable String[] args) {
+                List<String> pluginsS = new ArrayList<>();
+                for (AdvancedPlugin plugin : AdvancedPlugin.getPlugins()) {
+                    String n = plugin.getName();
+                    if (args != null && args.length == 1) {
+                        if (n.toLowerCase().startsWith(args[0].toLowerCase()))
+                            pluginsS.add(n);
+                    } else if (args == null || args.length == 0) {
+                        pluginsS.add(plugin.getName());
+                    }
+                }
+
+                return pluginsS;
+            }
+        };
+        command.addParameter(reloadCmd);
+        try {
+            Plugin.getPlugin().getHandler().addCommand(command);
+        } catch (CommandNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

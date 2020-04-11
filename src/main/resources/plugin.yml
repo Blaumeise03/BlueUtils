@@ -1,5 +1,5 @@
 name: BlueUtils
-version: 3.1-SNAPSHOT
+version: 4.0-SNAPSHOT
 main: de.blaumeise03.blueUtils.Plugin
 api-version: 1.13
 description: A library for Spigot plugins
@@ -9,19 +9,28 @@ website: blaumeise03.de
 
 commands:
   blueUtils:
-    permission: blueUtils.reloadPlugin
-    description: Reloads a Plugin
+    permission: blueUtils.command
+    description: Main-command with muliple uses
 
 permissions:
+  blueUtils.command:
+    default: op
+    description: Permission for the /blueUtils main-command
+  blueUtils.command.reloadPlugin:
+    default: op
+    description: Permission for reloading plugins
   blueUtils.thirdExecution:
     default: op
     description: Permission to execute a command for an other player
-  blueUtils.reloadPlugin:
+  blueUtils.command.*:
     default: op
-    description: Permission for reloading plugins
+    description: Wildcard-permission for all commands
+    children:
+      blueUtils.command: true
+      blueUtils.command.reloadPlugin: true
   blueUtils.*:
     default: op
     description: Wildcard
     children:
       blueUtils.thirdExecution: true
-      blueUtils.reloadPlugin: true
+      blueUtils.command.*: true
