@@ -54,11 +54,11 @@ public class MasterCommand {
              */
             @Override
             public void execute(CommandSender sender, String[] args, boolean isPlayer, boolean isThird, CommandSender originalSender) {
-                if (args.length > 1) {
+                if (args.length > 0) {
                     for (AdvancedPlugin plugin : AdvancedPlugin.getPlugins()) {
                         if (plugin.getName().equalsIgnoreCase(args[0])) {
-                            plugin.onReload();
-                            sender.sendMessage("§aPlugin reloaded!");
+                            boolean s = plugin.onReload();
+                            sender.sendMessage((isPlayer ? (s ? "§a" : "§c") : "") + "Plugin was " + (s ? "" : "not ") + "reloaded!");
                             return;
                         }
                     }

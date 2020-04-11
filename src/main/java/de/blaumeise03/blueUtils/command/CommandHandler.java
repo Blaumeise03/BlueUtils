@@ -67,10 +67,10 @@ public class CommandHandler implements TabExecutor {
                         }
                     }
                 }
-                String[] nArgs = new String[args.length - i];
-                for (int j = i; j <= args.length; j++) {
-                    nArgs[j] = args[i + j];
-                }
+                String[] nArgs = args;
+                if (args.length > 1)
+                    nArgs = Arrays.copyOfRange(args, 1, args.length);
+
                 current.execute(sender, nArgs, sender instanceof Player, third, originalSender);
                 break;
             }
