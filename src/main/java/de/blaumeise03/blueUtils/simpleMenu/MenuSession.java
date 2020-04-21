@@ -14,13 +14,13 @@ import java.util.Map;
 /**
  * This class represents a menu-session of a player.
  */
-public class MenuSession {
+public class MenuSession implements Session {
     static Map<Player, MenuSession> openMenus = new HashMap<>();
-    private final Player viewer;
-    private final Inventory inventory;
+    final Player viewer;
+    final Inventory inventory;
     int startIndex;
     Map<Integer, MenuChild> viewContent;
-    private Menu current;
+    Menu current;
 
     public MenuSession(Menu current, Player viewer, int size, String title) {
         this.current = current;
@@ -31,11 +31,13 @@ public class MenuSession {
         goTo(current);
     }
 
-    void executeClick(Player p, int slot) {
+    @Override
+    public void executeClick(Player p, int slot) {
         current.processClick(p, slot, this);
     }
 
-    void goTo(Menu menu) {
+    @Override
+    public void goTo(Menu menu) {
         current = menu;
         startIndex = 0;
         if (menu instanceof ScrollableMenu)

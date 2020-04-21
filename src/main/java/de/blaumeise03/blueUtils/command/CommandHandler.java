@@ -51,26 +51,38 @@ public class CommandHandler implements TabExecutor {
                     if (p != null) {
                         third = true;
                         sender = p;
+                        args = Arrays.copyOfRange(args, 1, args.length);
                     }
                 }
                 Command current = c;
+                String[] nArgs = args;
                 int i = 0;
                 boolean end = false;
                 while (!end) {
                     end = true;
                     for (Command subC : current.subCommands) {
-                        if (args.length > i && subC.equals(args[i])) {
+                        //System.out.println(subC.label + "\"" + args[0] +"\"" + (args.length > 0 ? " true " : " false ") + (args.length > 0 && subC.equals(args[0]) ? "true" : "false"));
+                        if (nArgs.length > 0 && subC.equals(nArgs[0])) {
                             current = subC;
                             i++;
+                            nArgs = Arrays.copyOfRange(nArgs, 1, nArgs.length);
                             end = false;
+                            if (current.thirdExecutable && (!(sender instanceof Player) || sender.hasPermission("blueUtils.thirdExecution"))) {
+                                Player p = Bukkit.getPlayer(args[0]);
+                                if (p != null) {
+                                    third = true;
+                                    sender = p;
+                                    args = Arrays.copyOfRange(args, 1, args.length);
+                                }
+                            }
                             break;
                         }
                     }
                 }
-                String[] nArgs = args;
-                if (args.length > 1)
-                    nArgs = Arrays.copyOfRange(args, 1, args.length);
-
+                if (sender instanceof Player && !sender.hasPermission(current.permission)) {
+                    sender.sendMessage("§cDazu hast du keine Rechte!");
+                    return true;
+                }
                 current.execute(sender, nArgs, sender instanceof Player, third, originalSender);
                 break;
             }
@@ -106,7 +118,7 @@ public class CommandHandler implements TabExecutor {
         //System.out.println("A " + Arrays.toString(args));
         List<String> tab = new ArrayList<>();
         if (c != null) {
-            tab.addAll(c.getTabComplete(Arrays.copyOfRange(args, 0, args.length)));
+            tab.addAll(c.getTabComplete(Arrays.copyOfRange(args, 0, args.length), sender));
         }
         return tab;
     }

@@ -7,9 +7,11 @@ package de.blaumeise03.blueUtils.simpleMenu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * This class contains all required <code>EventHandler</code>. It
@@ -28,11 +30,27 @@ public class MenuListener implements Listener {
                 }
             }
         }
+        if (HotBarSession.sessions.containsKey(e.getWhoClicked()) && HotBarSession.sessions.get(e.getWhoClicked()).active) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        if (HotBarSession.sessions.containsKey(e.getPlayer())) {
+            e.setCancelled(true);
+            if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                HotBarSession.sessions.get(e.getPlayer()).executeClick(e.getPlayer(), e.getPlayer().getInventory().getHeldItemSlot());
+            }
+        }
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         //noinspection SuspiciousMethodCalls
         MenuSession.openMenus.remove(e.getPlayer());
+        if (HotBarSession.sessions.containsKey(e.getPlayer())) {
+            HotBarSession.sessions.get(e.getPlayer()).refresh();
+        }
     }
 }

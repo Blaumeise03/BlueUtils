@@ -5,6 +5,7 @@
 package de.blaumeise03.blueUtils.command;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 import javax.annotation.Nullable;
@@ -41,7 +42,7 @@ public abstract class Command {
      * @param args           the arguments passed to the command
      * @param isPlayer       if the <code>sender</code> is a {@link org.bukkit.entity.Player Player}
      * @param isThird        if the command was executed by the <code>originalSender</code> for another player
-     *                       e.g: /command player args.. --> the command, if {@link Command#thirdExecutable} is true,
+     *                       e.g: /command player args.. - the command, if {@link Command#thirdExecutable} is true,
      *                       gets executed at the 'player' passed as first argument
      * @param originalSender The original sender, equals <code>sender</code> if command was not third-executed
      */
@@ -71,7 +72,7 @@ public abstract class Command {
         return label;
     }
 
-    public List<String> getTabComplete(String[] args) {
+    public List<String> getTabComplete(String[] args, CommandSender sender) {
         List<String> tab = new ArrayList<>();
         //System.out.println("B " + Arrays.toString(args));
         if (args.length > 0) {
@@ -79,8 +80,10 @@ public abstract class Command {
             for (Command c : subCommands) {
                 if (c.label.toLowerCase().startsWith(arg)) {
                     if (args.length > 1) {
-                        tab.addAll(c.getTabComplete(Arrays.copyOfRange(args, 1, args.length)));
+                        tab.addAll(c.getTabComplete(Arrays.copyOfRange(args, 1, args.length), sender));
                     } else {
+                        if (permission != null && sender instanceof Player && !sender.hasPermission(permission))
+                            continue;
                         tab.add(c.getLabel());
                     }
                 }

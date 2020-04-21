@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -32,8 +33,9 @@ public class ScrollableMenu extends Menu implements Scrollable {
         leftStack.setItemMeta(iMetaL);
         left = new MenuButton(leftStack, "Zurück") {
             @Override
-            public void onClick(Player p, MenuSession session) {
+            public MenuSession onClick(@NotNull Player p, MenuSession session) {
                 goPrevious(session);
+                return session;
             }
         };
         ItemStack rightStack = Head.getSkull("2a3b8f681daad8bf436cae8da3fe8131f62a162ab81af639c3e0644aa6abac2f");
@@ -43,8 +45,9 @@ public class ScrollableMenu extends Menu implements Scrollable {
         rightStack.setItemMeta(iMetaR);
         right = new MenuButton(rightStack, "Weiter") {
             @Override
-            public void onClick(Player p, MenuSession session) {
+            public MenuSession onClick(@NotNull Player p, MenuSession session) {
                 goNext(session);
+                return session;
             }
         };
     }

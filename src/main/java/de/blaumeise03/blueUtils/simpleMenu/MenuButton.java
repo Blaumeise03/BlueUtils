@@ -43,17 +43,6 @@ public abstract class MenuButton implements MenuChild {
     }
 
     /**
-     * This method defines what happens if the player clicks on it. It will
-     * be called by the {@link Menu#processClick(Player, int, MenuSession)}-
-     * method.
-     *
-     * @param p       the player who clicked.
-     * @param session the {@link MenuSession} of the player.
-     */
-    @Override
-    public abstract void onClick(Player p, MenuSession session);
-
-    /**
      * Returns the <code>ItemStack</code> wich will be displayed.
      *
      * @return the <code>ItemStack</code>-icon.

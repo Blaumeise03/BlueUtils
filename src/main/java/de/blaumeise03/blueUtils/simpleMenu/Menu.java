@@ -75,4 +75,8 @@ public class Menu {
                 inventory.setItem(child.getIndex(), child.render());
         }
     }
+
+    public List<MenuChild> getContent() {
+        return content;
+    }
 }

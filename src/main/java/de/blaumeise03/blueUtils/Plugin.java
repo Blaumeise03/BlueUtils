@@ -5,6 +5,7 @@
 package de.blaumeise03.blueUtils;
 
 import de.blaumeise03.blueUtils.pluginCommands.MasterCommand;
+import de.blaumeise03.blueUtils.simpleMenu.MenuListener;
 
 /**
  * Plugin main-class of this library to get loaded by the server. Should not be used for anything or this library can get broken.
@@ -39,6 +40,8 @@ public class Plugin extends AdvancedPlugin {
         getLogger().info("Information: Some older plugins could cause errors if they are for an older/newer version of this library so keep up-to-date.");
         getLogger().info("Adding commands...");
         MasterCommand.init();
+        getLogger().info("Registering events...");
+        registerEvent(new MenuListener());
         getLogger().info("Complete!");
     }
 }

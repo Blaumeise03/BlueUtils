@@ -6,6 +6,8 @@ package de.blaumeise03.blueUtils.simpleMenu;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This interface represents all contents of any {@link Menu menu}.
@@ -18,9 +20,9 @@ public interface MenuChild {
      * a new {@link SubMenu SubMenu} will be opened.
      *
      * @param p       the player who clicked.
-     * @param session the {@link MenuSession} of the player.
+     * @param session the {@link MenuSession} of the player. Is null if parent menu is a hotbar-menu
      */
-    void onClick(Player p, MenuSession session);
+    MenuSession onClick(@NotNull Player p, @Nullable MenuSession session);
 
     /**
      * Getter for the <code>ItemStack</code>-icon

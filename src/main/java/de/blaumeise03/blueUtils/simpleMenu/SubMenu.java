@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -28,8 +29,12 @@ public class SubMenu extends Menu implements MenuChild {
     }
 
     @Override
-    public void onClick(Player p, MenuSession session) {
+    public MenuSession onClick(@NotNull Player p, MenuSession session) {
+        if (session == null) {
+            session = new MenuSession(this, p, 45, name);
+        }
         session.goTo(this);
+        return session;
     }
 
     @Override

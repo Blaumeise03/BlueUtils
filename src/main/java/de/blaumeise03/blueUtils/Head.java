@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
@@ -70,10 +71,11 @@ public class Head {
     public MenuButton getButton() {
         return new MenuButton(head, name) {
             @Override
-            public void onClick(Player p, MenuSession session) {
+            public MenuSession onClick(@NotNull Player p, MenuSession session) {
                 p.getInventory().addItem(head);
                 p.sendMessage("§aDu hast den Kopf §6" + name + "§a bekommen!");
                 p.playSound(p.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, SoundCategory.MASTER, 1, 1);
+                return session;
             }
         };
     }
