@@ -79,7 +79,7 @@ public class CommandHandler implements TabExecutor {
                         }
                     }
                 }
-                if (sender instanceof Player && !sender.hasPermission(current.permission)) {
+                if (sender instanceof Player && current.permission != null && !sender.hasPermission(current.permission)) {
                     sender.sendMessage("§cDazu hast du keine Rechte!");
                     return true;
                 }

@@ -7,12 +7,15 @@ package de.blaumeise03.blueUtils.pluginCommands;
 import de.blaumeise03.blueUtils.AdvancedPlugin;
 import de.blaumeise03.blueUtils.Plugin;
 import de.blaumeise03.blueUtils.command.Command;
+import de.blaumeise03.blueUtils.crossServer.ServerState;
 import de.blaumeise03.blueUtils.exceptions.CommandNotFoundException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 import javax.annotation.Nullable;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,5 +100,34 @@ public class MasterCommand {
         } catch (CommandNotFoundException e) {
             e.printStackTrace();
         }
+
+        Command stateCmd = new Command("serverState", false, false, new Permission("blueUtils.command.serverState")) {
+            @Override
+            public void execute(CommandSender sender, String[] args, boolean isPlayer, boolean isThird, CommandSender originalSender) {
+                StringBuilder builder = new StringBuilder("§aServer-states:");
+                Plugin.getPlugin().getServerBuffer().refreshBuffer();
+                for (ServerState state : Plugin.getPlugin().getServerBuffer().getStates()) {
+                    builder.append("\n§6- §aServer: §2").append(state.getServer()).append("§a State: §2").append(state.getState()).append("§a Extra: §2").append(state.getExtra());
+                }
+                sender.sendMessage(builder.toString());
+            }
+        };
+        command.addParameter(stateCmd);
+
+        Command resetTableCmd = new Command("resetStateTable", false, false, new Permission("blueUtils.command.resetStateTable")) {
+            @Override
+            public void execute(CommandSender sender, String[] args, boolean isPlayer, boolean isThird, CommandSender originalSender) {
+                try (Statement stm = Plugin.getPlugin().getServerBuffer().getConnection().createStatement()) {
+                    stm.execute("DROP TABLE " + Plugin.getPlugin().getServerBuffer().getServerTableName() + ";");
+                    Plugin.getPlugin().getServerBuffer().tryCreateTable();
+                } catch (SQLException e) {
+                    sender.sendMessage((isPlayer ? "§c" : "") + e.getMessage());
+                    //sender.sendMessage((isPlayer ? "§c" : "") + e.getSQLState());
+                    e.printStackTrace();
+                }
+                sender.sendMessage((isPlayer ? "§a" : "") + "Befehl gesendet!");
+            }
+        };
+        command.addParameter(resetTableCmd);
     }
 }

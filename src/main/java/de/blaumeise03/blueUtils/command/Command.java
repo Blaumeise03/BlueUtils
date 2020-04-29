@@ -42,7 +42,7 @@ public abstract class Command {
      * @param args           the arguments passed to the command
      * @param isPlayer       if the <code>sender</code> is a {@link org.bukkit.entity.Player Player}
      * @param isThird        if the command was executed by the <code>originalSender</code> for another player
-     *                       e.g: /command player args.. - the command, if {@link Command#thirdExecutable} is true,
+     *                       e.g: /command player args.. - the command, if {@link Command#isThirdExecutable()} is true,
      *                       gets executed at the 'player' passed as first argument
      * @param originalSender The original sender, equals <code>sender</code> if command was not third-executed
      */
@@ -82,7 +82,7 @@ public abstract class Command {
                     if (args.length > 1) {
                         tab.addAll(c.getTabComplete(Arrays.copyOfRange(args, 1, args.length), sender));
                     } else {
-                        if (permission != null && sender instanceof Player && !sender.hasPermission(permission))
+                        if (c.permission != null && sender instanceof Player && !sender.hasPermission(c.permission))
                             continue;
                         tab.add(c.getLabel());
                     }
@@ -92,11 +92,29 @@ public abstract class Command {
             if (l != null) tab.addAll(l);
         } else {
             for (Command c : subCommands) {
+                if (c.permission != null && sender instanceof Player && !sender.hasPermission(c.permission))
+                    continue;
                 tab.add(c.label);
             }
             List<String> l = getAdditionalTabArguments(null);
             if (l != null) tab.addAll(l);
         }
         return tab;
+    }
+
+    public boolean isOnlyPlayer() {
+        return onlyPlayer;
+    }
+
+    public boolean isThirdExecutable() {
+        return thirdExecutable;
+    }
+
+    public Permission getPermission() {
+        return permission;
+    }
+
+    public Set<Command> getSubCommands() {
+        return subCommands;
     }
 }
