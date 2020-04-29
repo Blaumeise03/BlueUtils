@@ -25,13 +25,15 @@ public class HotBarSession implements Session {
     }
 
     public void refresh() {
-        menu.renderMenu(player.getInventory());
-        if (session != null) {
-            session.viewer.closeInventory();
-            session = null;
+        if (menu != null) {
+            menu.renderMenu(player.getInventory());
+            if (session != null) {
+                session.viewer.closeInventory();
+                session = null;
+            }
+            active = true;
+            player.updateInventory();
         }
-        active = true;
-        player.updateInventory();
     }
 
     @Override
