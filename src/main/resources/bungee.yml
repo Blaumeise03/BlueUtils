@@ -1,0 +1,5 @@
+name: BlueUtilsProxy
+main: de.blaumeise03.blueUtils.proxy.BungeeMain
+description: Utility libray for BungeeCord and Spigot/Paper
+version: 4.2-SNAPSHOT
+author: Blaumeise03

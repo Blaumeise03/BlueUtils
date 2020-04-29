@@ -1,7 +1,7 @@
 name: BlueUtils
-version: 4.0-SNAPSHOT
+version: 4.2-SNAPSHOT
 main: de.blaumeise03.blueUtils.Plugin
-api-version: 1.13
+api-version: 1.15
 description: A library for Spigot plugins
 load: STARTUP
 author: Blaumeise03
@@ -19,6 +19,12 @@ permissions:
   blueUtils.command.reloadPlugin:
     default: op
     description: Permission for reloading plugins
+  blueUtils.command.serverState:
+    default: op
+    description: Permission for getting and changing server states.
+  blueUtils.command.resetStateTable:
+    default: op
+    description: Permission for droping and recreating the serverState-Table
   blueUtils.thirdExecution:
     default: op
     description: Permission to execute a command for an other player
@@ -28,6 +34,7 @@ permissions:
     children:
       blueUtils.command: true
       blueUtils.command.reloadPlugin: true
+      blueUtils.command.serverState: true
   blueUtils.*:
     default: op
     description: Wildcard

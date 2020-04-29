@@ -1,0 +1,14 @@
+#MySQL Database
+database:
+  mysql:
+    #Address for MySQL Server
+    host: 127.0.0.1
+    #Port for MySQL Server
+    port: 3306
+    #Username
+    user: INSERT USER NAME
+    #Password
+    password: INSERT PASSWORD
+    #Name of the database
+    databaseName: blue_utils
+serverName: Server
