@@ -20,6 +20,8 @@ public class ServerBuffer {
     private final String serverTableName = "serverStates";
     private final List<ServerState> states = new ArrayList<>();
     private Connection connection = null;
+    private PreparedStatement insertStm = null;
+    private PreparedStatement selectStm = null;
 
     public ServerBuffer(Configuration config) {
         this(
@@ -45,6 +47,8 @@ public class ServerBuffer {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             connection = DriverManager.getConnection(url, user, password);
             tryCreateTable();
+            insertStm = connection.prepareStatement("REPLACE INTO ? (server, state, extra) VALUES (?, '?, ?);");
+            selectStm = connection.prepareStatement("SELECT * FROM ?");
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
             System.err.println("JDBC Driver not found!");
             e.printStackTrace();
@@ -65,10 +69,16 @@ public class ServerBuffer {
     }
 
     public void refreshBuffer() {
-        if (connection == null) return;
+        if (connection == null || selectStm == null) return;
+        try {
+            selectStm.setString(1, serverTableName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         try (
-                Statement stmt = connection.createStatement();
-                ResultSet res = stmt.executeQuery("SELECT * FROM " + serverTableName)
+                //Statement stmt = connection.createStatement();
+                //ResultSet res = stmt.executeQuery("SELECT * FROM " + serverTableName)
+                ResultSet res = selectStm.executeQuery()
         ) {
             states.clear();
             while (res.next()) {
@@ -102,7 +112,7 @@ public class ServerBuffer {
                 break;
             }
         }
-        try (Statement stmt = connection.createStatement()) {
+        /*try (Statement stmt = connection.createStatement()) {
             //stmt.execute("INSERT OR REPLACE INTO " + serverTableName + " (server, state, extra) VALUES (\"" + server + "\", \"" + state + "\", \"" + extra + "\");");
             /*stmt.execute(
                     "IF EXISTS(SELECT * FROM " + serverTableName + " WHERE server='" + server + "') THEN\n" +
@@ -110,10 +120,32 @@ public class ServerBuffer {
                             "ELSE\n" +
                             "  INSERT INTO " + serverTableName + " (server, state, extra) " +
                             "VALUES ('" + server + "', '" + state + "', '" + extra + "')\nEND IF;"
-            );*/
+            );/
             stmt.execute(
                     "REPLACE INTO " + serverTableName + " (server, state, extra) VALUES ('" + server + "', '" + state + "', '" + extra + "');"
             );
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            insertStm.setString(1, serverTableName);
+            insertStm.setString(2, server);
+            insertStm.setString(3, state);
+            insertStm.setString(4, extra);
+            insertStm.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        try {
+            insertStm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -9,8 +9,6 @@ import de.blaumeise03.blueUtils.exceptions.ConfigurationNotFoundException;
 import de.blaumeise03.blueUtils.pluginCommands.MasterCommand;
 import de.blaumeise03.blueUtils.simpleMenu.MenuListener;
 
-import java.sql.SQLException;
-
 /**
  * Plugin main-class of this library to get loaded by the server. Should not be used for anything or this library can get broken.
  *
@@ -34,11 +32,7 @@ public class Plugin extends AdvancedPlugin {
     public void onDisable() {
         super.onDisable();
         setState("offline", "N/A");
-        try {
-            serverBuffer.getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        serverBuffer.close();
     }
 
     @Override
