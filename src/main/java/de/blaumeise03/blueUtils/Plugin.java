@@ -88,6 +88,7 @@ public class Plugin extends AdvancedPlugin {
             }
             return;
         }*/
+
         serverBuffer.setState(serverName, newState, newExtra);
     }
 
