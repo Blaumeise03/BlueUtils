@@ -18,22 +18,15 @@ public class DefaultCompleter {
 
 
     /**
-     * Default tabCompleter for all online Players
+     * Default tab completer for all Players currently online.
      *
-     * @param arg the partial argument entered by the sender if available
-     * @return all possible arguments
+     * @param arg The partial argument entered by the sender if available
+     * @return All possible arguments
      */
     public static @NotNull List<String> getPlayerComplete(@Nullable String arg) {
-        List<String> result = new ArrayList<>();
-        if (arg == null || arg.equals("")) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                result.add(p.getName());
-            }
-        } else {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (p.getName().toLowerCase().startsWith(arg.toLowerCase())) result.add(p.getName());
-            }
-        }
-        return result;
+        return Bukkit.getServer().getOnlinePlayers()
+            .stream()
+            .filter((player) -> player.getName().startsWith(arg))
+            .collect(Collectors.toList());
     }
 }
