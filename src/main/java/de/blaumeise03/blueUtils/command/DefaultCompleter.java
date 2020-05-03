@@ -18,7 +18,7 @@ public class DefaultCompleter {
 
 
     /**
-     * Default tab completer for all Player currently online.
+     * Default tab completer for all Players currently online.
      *
      * @param arg The partial argument entered by the sender if available
      * @return All possible arguments
