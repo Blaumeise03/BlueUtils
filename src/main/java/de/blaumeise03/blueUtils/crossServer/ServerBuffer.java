@@ -6,7 +6,9 @@ package de.blaumeise03.blueUtils.crossServer;
 
 import de.blaumeise03.blueUtils.Configuration;
 import de.blaumeise03.blueUtils.Plugin;
+import de.blaumeise03.blueUtils.utils.Timer;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ public class ServerBuffer {
     private Connection connection = null;
     private PreparedStatement insertStm = null;
     private PreparedStatement selectStm = null;
+    private final Timer timer = new Timer("BlueUtils ServerBuffer refresh timings", "logs/latestBlueUtilsSQLTimings.txt");
 
     public ServerBuffer(Configuration config) {
         this(
@@ -69,6 +72,8 @@ public class ServerBuffer {
     }
 
     public synchronized void refreshBuffer() {
+        //if(timer.isRunning()) timer.reset();
+        //timer.start();
         try {
             if (connection == null || selectStm == null || connection.isClosed() || selectStm.isClosed()) {
                 refreshConnection();
@@ -116,27 +121,27 @@ public class ServerBuffer {
             e.printStackTrace();
             return;
         }
+        //timer.stop();
     }
 
     private synchronized void refreshConnection() {
         Plugin.getPlugin().getLogger().info("Refreshing SQL-Connection...");
-
         try {
-            if (connection == null || !connection.isValid(2) || connection.isClosed())
+            if (connection == null || connection.isClosed() || !connection.isValid(2))
                 connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
             return;
         }
         try {
-            if ((insertStm == null || insertStm.isClosed()) && connection != null)
+            if (insertStm == null || insertStm.isClosed())
                 insertStm = connection.prepareStatement("REPLACE INTO " + serverTableName + " (server, state, extra) VALUES (?, ?, ?);");
         } catch (SQLException e) {
             e.printStackTrace();
             return;
         }
         try {
-            if ((insertStm == null || insertStm.isClosed()) && connection != null)
+            if (selectStm == null || insertStm.isClosed())
                 selectStm = connection.prepareStatement("SELECT * FROM " + serverTableName);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -146,11 +151,16 @@ public class ServerBuffer {
     }
 
     public synchronized void setState(String server, String state, String extra) {
+        this.setState(server, state, extra, true);
+    }
+
+    public synchronized void setState(String server, String state, String extra, boolean retry) {
         try {
             if (connection == null || insertStm == null || selectStm == null || connection.isClosed() || insertStm.isClosed() || selectStm.isClosed()) {
                 refreshConnection();
             }
         } catch (SQLException e) {
+            Plugin.getPlugin().getLogger().info("JDBC threw an exception: ");
             e.printStackTrace();
             refreshConnection();
         }
@@ -166,16 +176,21 @@ public class ServerBuffer {
         try {
             //insertStm.setString(1, serverTableName);
             if (insertStm == null || insertStm.isClosed()) {
-                Plugin.getPlugin().getLogger().severe("Can't update state! Statement ist null!");
+                Plugin.getPlugin().getLogger().severe("Can't update state! Statement ist null or is closed!");
                 return;
             }
             insertStm.setString(1, server);
             insertStm.setString(2, state);
             insertStm.setString(3, extra);
             insertStm.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
+            Plugin.getPlugin().getLogger().info("JDBC threw an exception: ");
             e.printStackTrace();
-            return;
+            refreshConnection();
+            if (retry) {
+                Plugin.getPlugin().getLogger().info("JDBC threw an exception, reattemping...");
+                setState(server, state, extra, false);
+            }
         }
     }
 
@@ -197,6 +212,14 @@ public class ServerBuffer {
             if (connection != null)
                 connection.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void saveLog() {
+        try {
+            timer.logTimings();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
