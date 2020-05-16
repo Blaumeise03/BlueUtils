@@ -129,5 +129,14 @@ public class MasterCommand {
             }
         };
         command.addParameter(resetTableCmd);
+
+        Command dumpSQLTimingsCmd = new Command("dumpSQLTimings", false, false, new Permission("blueUtils.command.dumpSQLTimings")) {
+            @Override
+            public void execute(CommandSender sender, String[] args, boolean isPlayer, boolean isThird, CommandSender originalSender) {
+                Plugin.getPlugin().getServerBuffer().saveLog();
+                sender.sendMessage((isPlayer ? "§a" : "") + "Log wurde gespeichert!");
+            }
+        };
+        command.addParameter(dumpSQLTimingsCmd);
     }
 }

@@ -36,4 +36,24 @@ public class DefaultCompleter {
         }
         return result;
     }
+
+    public static <E extends Enum<?>> @NotNull List<String> getEnumComplete(@NotNull E e, @Nullable String arg) {
+        return getEnumComplete(e.getClass(), arg);
+    }
+
+    private static <E extends Enum<?>> @NotNull List<String> getEnumComplete(@NotNull Class<E> c, @Nullable String arg) {
+        List<String> result = new ArrayList<>();
+        if (arg == null || arg.equals("")) {
+            for (E e : c.getEnumConstants()) {
+                result.add(e.name());
+            }
+        } else {
+            arg = arg.toLowerCase().trim();
+            for (E e : c.getEnumConstants()) {
+                if (e.name().toLowerCase().startsWith(arg))
+                    result.add(e.name());
+            }
+        }
+        return result;
+    }
 }
