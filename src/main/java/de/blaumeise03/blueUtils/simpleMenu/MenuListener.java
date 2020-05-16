@@ -8,14 +8,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 /**
- * This class contains all required <code>EventHandler</code>. It
+ * This class contains all required {@link EventHandler}s. It
  * must be registered inside the <code>onEnable()</code>-method.
+ * BlueUtils will register these events automatically in his <code>onEnable()</code>-method
  */
 public class MenuListener implements Listener {
 
@@ -36,6 +40,27 @@ public class MenuListener implements Listener {
     }
 
     @EventHandler
+    public void onDrop(PlayerDropItemEvent e) {
+        if (HotBarSession.sessions.containsKey(e.getPlayer())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent e) {
+        if (HotBarSession.sessions.containsKey(e.getEntity())) {
+            e.getDrops().clear();
+        }
+    }
+
+    @EventHandler
+    public void onSwitch(PlayerSwapHandItemsEvent e) {
+        if (HotBarSession.sessions.containsKey(e.getPlayer())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         if (HotBarSession.sessions.containsKey(e.getPlayer())) {
             e.setCancelled(true);
@@ -45,9 +70,9 @@ public class MenuListener implements Listener {
         }
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        //noinspection SuspiciousMethodCalls
         MenuSession.openMenus.remove(e.getPlayer());
         if (HotBarSession.sessions.containsKey(e.getPlayer())) {
             HotBarSession.sessions.get(e.getPlayer()).refresh();
