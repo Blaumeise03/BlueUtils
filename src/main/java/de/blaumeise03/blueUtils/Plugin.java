@@ -73,22 +73,6 @@ public class Plugin extends AdvancedPlugin {
     public void setState(String newState, String newExtra) {
         if (serverName == null) return;
         serverState = newState;
-        /*for (Player p : getServer().getOnlinePlayers()) {
-            try (
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(stream)
-            ) {
-                out.writeUTF("setStatus");
-                out.writeUTF(serverName);
-                out.writeUTF(serverState);
-                p.sendPluginMessage(this, "blueutils:proxy", stream.toByteArray());
-                getLogger().info("Send ServerState-update!");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return;
-        }*/
-
         serverBuffer.setState(serverName, newState, newExtra);
     }
 

@@ -1,5 +1,5 @@
 name: BlueUtils
-version: 4.2-SNAPSHOT
+version: 4.3-SNAPSHOT
 main: de.blaumeise03.blueUtils.Plugin
 api-version: 1.15
 description: A library for Spigot plugins
@@ -25,6 +25,9 @@ permissions:
   blueUtils.command.resetStateTable:
     default: op
     description: Permission for droping and recreating the serverState-Table
+  blueUtils.command.dumpSQLTimings:
+    default: op
+    description: Permission for dumping the SQL-Timings to a file
   blueUtils.thirdExecution:
     default: op
     description: Permission to execute a command for an other player

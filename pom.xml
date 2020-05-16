@@ -10,7 +10,7 @@
 
     <groupId>de.blaumeise03</groupId>
     <artifactId>BlueUtils</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.3-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -95,7 +95,7 @@
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
-        <defaultGoal>clean source:jar javadoc:jar package</defaultGoal>
+        <defaultGoal>clean source:jar javadoc:jar install</defaultGoal>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -129,26 +129,6 @@
                     <target>8</target>
                 </configuration>
                 <version>3.8.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>de.blaumeise03:BlueUtils-API</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
