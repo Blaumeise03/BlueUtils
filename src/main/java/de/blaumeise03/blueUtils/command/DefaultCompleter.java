@@ -5,12 +5,13 @@
 package de.blaumeise03.blueUtils.command;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultCompleter {
     private DefaultCompleter() {
@@ -25,8 +26,9 @@ public class DefaultCompleter {
      */
     public static @NotNull List<String> getPlayerComplete(@Nullable String arg) {
         return Bukkit.getServer().getOnlinePlayers()
-            .stream()
-            .filter((player) -> player.getName().startsWith(arg))
+                .stream()
+                .filter((player) -> (arg == null || player.getName().startsWith(arg)))
+                .map((HumanEntity::getName))
             .collect(Collectors.toList());
     }
 
