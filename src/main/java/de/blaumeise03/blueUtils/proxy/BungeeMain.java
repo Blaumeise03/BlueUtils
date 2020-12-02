@@ -18,6 +18,7 @@ public class BungeeMain extends Plugin {
     @Override
     public void onEnable() {
         plugin = this;
+        getProxy().registerChannel(BLUE_UTILS_CHANNEL);
         //ProxyServer.getInstance().getPluginManager().registerListener(this, new ChannelListener());
     }
 
