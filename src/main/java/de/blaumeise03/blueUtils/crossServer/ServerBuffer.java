@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Blaumeise03
+ * Copyright (c) 2022 Blaumeise03
  */
 
 package de.blaumeise03.blueUtils.crossServer;
@@ -15,6 +15,7 @@ import java.util.List;
 
 public class ServerBuffer {
     private static final String serverTableName = "serverStates";
+    private boolean isDatabaseIsActive = true;
     private final String url;
     private final String host;
     private final String port;
@@ -44,8 +45,10 @@ public class ServerBuffer {
         this.password = password;
         if (host == null || port == null || user == null || password == null || database == null || user.equalsIgnoreCase("INSERT USER NAME") || password.equalsIgnoreCase("INSERT PASSWORD")) {
             Plugin.getPlugin().getLogger().severe("Failed loading sql-config! At least on information is missing!");
+            isDatabaseIsActive = false;
             //Plugin.getPlugin().getLogger().warning("Host: " + host + " Port: " + port + " User: " + user + " No, I won't print the password...");
         }
+        if (!isDatabaseIsActive) return;
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             connection = DriverManager.getConnection(url, user, password);
@@ -74,6 +77,7 @@ public class ServerBuffer {
     public synchronized void refreshBuffer() {
         //if(timer.isRunning()) timer.reset();
         //timer.start();
+        if (!isDatabaseIsActive) return;
         try {
             if (connection == null || selectStm == null || connection.isClosed() || selectStm.isClosed()) {
                 refreshConnection();
@@ -125,6 +129,7 @@ public class ServerBuffer {
     }
 
     private synchronized void refreshConnection() {
+        if (!isDatabaseIsActive) return;
         Plugin.getPlugin().getLogger().info("Refreshing SQL-Connection...");
         try {
             if (connection == null || connection.isClosed() || !connection.isValid(2))
@@ -155,6 +160,7 @@ public class ServerBuffer {
     }
 
     public synchronized void setState(String server, String state, String extra, boolean retry) {
+        if (!isDatabaseIsActive) return;
         try {
             if (connection == null || insertStm == null || selectStm == null || connection.isClosed() || insertStm.isClosed() || selectStm.isClosed()) {
                 refreshConnection();
@@ -195,6 +201,7 @@ public class ServerBuffer {
     }
 
     public synchronized void close() {
+        if (!isDatabaseIsActive) return;
         Plugin.getPlugin().getLogger().info("Closing SQL...");
         try {
             if (insertStm != null)
